@@ -1,7 +1,6 @@
 const fs = require('fs');
 import {screen} from '@testing-library/dom'
-
-let container =  null
+import exp from 'constants';
 
 beforeEach(() => {
   const fileContent = fs.readFileSync('src/index.html', 'utf8');
@@ -20,42 +19,35 @@ afterEach(() => {
    document.head.innerHTML = ""
 });
 
+test('O campo com o nome do produto não deve ser editável', () => {
+  const list = document.querySelectorAll('input:read-only')
+  expect(list.length).toBe(1)
+})
 
-
-test('todos os h2 possuem fonte de tamanho igual 1.2em', () => {
-  const list = screen.getAllByRole("heading", { level: 2 });
+test('Todos os campos devem ser obrigatórios', () => {
+  const list = screen.getAllByRole("textbox");
   for (let item of list) {
-    const styles =  window.getComputedStyle(item);
-    expect(styles.fontSize).toBe('1.2em');
+    if(item.readOnly === false) {
+      expect(item.required).toBe(true)
+    }
   }
+  const numberInput = screen.getByRole("spinbutton")
+  expect(numberInput.required).toBe(true)
 })
 
-test('Todos os paragrafos devem ter texto com a cor #323334', () => {
-  const produto1 = screen.getByText("Descrição do produto 1.");
-  let style =  window.getComputedStyle(produto1);
-  expect(style.color).toBe('rgb(50, 51, 52)');
-
-  const produto2 = screen.getByText("Descrição do produto 2.");
-  style =  window.getComputedStyle(produto2);
-  expect(style.color).toBe('rgb(50, 51, 52)');
-
-  const produto3 = screen.getByText("Descrição do produto 3.");
-  style =  window.getComputedStyle(produto3);
-  expect(style.color).toBe('rgb(50, 51, 52)');
+test('O campo e-mail deve garantir que o valor informado seja um e-mail válido', () => {
+  const emailInput = document.querySelector('input[type=email]');
+  expect(emailInput).not.toBeNull()
 })
 
-
-test('Todos os elementos p.price devem ter o font-weight igual a bold', () => {
-  const produto1 = screen.getByText("R$10.00");
-  let style =  window.getComputedStyle(produto1);
-  expect(style.fontWeight).toBe('bold');
-
-  const produto2 = screen.getByText("R$20.00");
-  style =  window.getComputedStyle(produto2);
-  expect(style.fontWeight).toBe('bold');
-
-  const produto3 = screen.getByText("R$30.00");
-  style =  window.getComputedStyle(produto3);
-  expect(style.fontWeight).toBe('bold');
+test('A nota da avaliação deve ser entre 1 e 5', () => {
+  const numberInput = document.querySelector('[type="number"]');
+  expect(numberInput).not.toBeNull()
+  expect(numberInput.min).toBe("1")
+  expect(numberInput.max).toBe("5")
 })
 
+test('O formulário deve possuir um botão de envio', () => {
+  const submitButton = document.querySelector('[type=submit]');
+  expect(submitButton).not.toBeNull()
+})
